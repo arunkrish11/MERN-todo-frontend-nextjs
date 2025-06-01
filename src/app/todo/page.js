@@ -5,20 +5,30 @@ import { useRouter } from "next/navigation";
 function App() {
   const router = useRouter();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-  const [users, setUsers] = useState([]);
+  const [user, setUser] = useState([]);
   const [todos, setTodos] = useState([]);
   const [text, setText] = useState("");
 
   // Fetch user
   useEffect(() => {
-    fetch(`${API_URL}/api/users`)
+    const token = localStorage.getItem("token");
+    fetch(`${API_URL}/api/user/details`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
-      .then((data) => setUsers(data));
+      .then((data) => setUser(data));
   }, []);
 
   // Fetch todos
   useEffect(() => {
-    fetch(`${API_URL}/api/todos`)
+    const token = localStorage.getItem("token");
+    fetch(`${API_URL}/api/todos`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => setTodos(data));
   }, []);
@@ -26,9 +36,13 @@ function App() {
   // Add todo
   const addTodo = async () => {
     if (!text.trim()) return;
+    const token = localStorage.getItem("token");
     const res = await fetch(`${API_URL}/api/todos`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ text }),
     });
     const newTodo = await res.json();
@@ -50,7 +64,6 @@ function App() {
   };
 
   function handleLogin() {
-    console.log("login?");
     router.push("/login");
   }
 
@@ -67,16 +80,16 @@ function App() {
               handleLogin();
             }}
           >Login</div> */}
-          {users.map((user) => (
+          {
             <div
               className="text-base py-1 justify-center items-center bg-blue-700 hover:bg-blue-800 text-white px-3 rounded-lg cursor-pointer"
               onClick={() => {
                 handleLogin();
               }}
             >
-              {user.name ? user.name : "Login"}
+              {user.username ? user.username : "Login"}
             </div>
-          ))}
+          }
         </div>
         <input
           value={text}

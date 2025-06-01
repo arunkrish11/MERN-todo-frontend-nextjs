@@ -1,8 +1,8 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "nitc.students",
-  description: "Be friends",
+  title: "ToDo WebApp",
+  description: "Mark you progress",
 };
 
 export default function RootLayout({ children }) {

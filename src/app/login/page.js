@@ -1,9 +1,11 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function Login() {
+  const router = useRouter();
   const [form, setForm] = useState({
     username: "",
     password: "",
@@ -14,15 +16,25 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch(`${API_URL}/api/users/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    try {
+      const res = await fetch(`${API_URL}/api/user/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-    const data = await res.json();
-    console.log("Login response:", data);
-    // store token, set user, redirect, etc.
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem("token", data.token);
+        router.push("/todo");
+      } else {
+        alert(data.message || "Login failed");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -54,7 +66,14 @@ export default function Login() {
           </button>
         </form>
         <p className="flex justify-center pt-3 text-sm ">
-          Don't have account? <a className="flex ps-2 cursor-pointer" href="/signup"> Create new one.</a>
+          Don't have account?{" "}
+          <a
+            className="flex ps-2 cursor-pointer hover:text-blue-800"
+            href="/signup"
+          >
+            {" "}
+            Create new one.
+          </a>
         </p>
       </div>
     </div>
