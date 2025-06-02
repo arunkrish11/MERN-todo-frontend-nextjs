@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 
 function App() {
   const router = useRouter();
-  const API_URL = process.env.CLIENT_URL || "http://localhost:5000";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const [user, setUser] = useState([]);
   const [todos, setTodos] = useState([]);
   const [text, setText] = useState("");
